@@ -19,4 +19,12 @@ public class Coordinates implements Serializable {
     public String toStringForCSV() {
         return x + "," + y;
     }
+
+    public Double getX() {
+        return x;
+    }
+
+    public Long getY() {
+        return y;
+    }
 }

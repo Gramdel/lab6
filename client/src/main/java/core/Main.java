@@ -17,8 +17,9 @@ public class Main {
         Main.args = args;
         date = new Date();
         ParseUnit.fromCSV();
-        System.out.println("Вас приветствует программа для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
-        interpreter.fromStream(System.in);
+        System.out.println(Creator.createProduct((Product) collection.toArray()[0],true));
+        //System.out.println("Вас приветствует программа для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
+        //interpreter.fromStream(System.in);
     }
 
     public static Date getDate() {

@@ -68,4 +68,20 @@ public class Organization implements Serializable {
     public String toStringForCSV() {
         return name + "," + (annualTurnover == null ? "" : annualTurnover) + "," + (employeesCount == null ? "" : employeesCount) + "," + (type == null ? "" : type) + "\n";
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getAnnualTurnover() {
+        return annualTurnover;
+    }
+
+    public Long getEmployeesCount() {
+        return employeesCount;
+    }
+
+    public OrganizationType getType() {
+        return type;
+    }
 }

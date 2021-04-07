@@ -9,14 +9,14 @@ import static core.Main.getCollection;
 
 public class Product implements Comparable<Product>, Serializable {
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    private final String name; //Поле не может быть null, Строка не может быть пустой
-    private final Coordinates coordinates; //Поле не может быть null
+    private String name; //Поле не может быть null, Строка не может быть пустой
+    private Coordinates coordinates; //Поле не может быть null
     private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    private final float price; //Значение поля должно быть больше 0
-    private final String partNumber; //Значение этого поля должно быть уникальным, Поле не может быть null
-    private final Float manufactureCost; //Поле не может быть null
-    private final UnitOfMeasure unitOfMeasure; //Поле не может быть null
-    private final Organization manufacturer; //Поле может быть null
+    private float price; //Значение поля должно быть больше 0
+    private String partNumber; //Значение этого поля должно быть уникальным, Поле не может быть null
+    private Float manufactureCost; //Поле не может быть null
+    private UnitOfMeasure unitOfMeasure; //Поле не может быть null
+    private Organization manufacturer; //Поле может быть null
 
     public Product(String name, Coordinates coordinates, float price, String partNumber, Float manufactureCost, UnitOfMeasure unitOfMeasure, Organization manufacturer) {
         this.id = createId();
@@ -110,5 +110,21 @@ public class Product implements Comparable<Product>, Serializable {
             }
         } while (!isUnique);
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public Float getManufactureCost() {
+        return manufactureCost;
     }
 }
