@@ -21,6 +21,22 @@ public class Clear extends Command {
     }
 
     @Override
+    public void prepare(String arg, boolean isInteractive) {
+        if (!arg.matches("\\s*")) {
+            System.out.println("У команды clear не может быть аргументов!");
+        }
+    }
+
+    @Override
+    public String execute() {
+        if(getCollection().size()>0) {
+            getCollection().clear();
+            return "Коллекция очищена.";
+        }
+        return "Коллекция пуста, нечего чистить!";
+    }
+
+    @Override
     public String description() {
         return "Очищает коллекцию." + syntax();
     }

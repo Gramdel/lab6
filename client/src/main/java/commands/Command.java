@@ -17,7 +17,7 @@ public abstract class Command implements Serializable {
 
     }
     public String execute(){
-        return args.toString();
+        return "lalala";
     }
     public abstract String description();
     public abstract String syntax();
@@ -28,7 +28,7 @@ public abstract class Command implements Serializable {
         this.receivedProduct = receivedProduct;
     }
     public void prepare(String arg, boolean isInteractive) {
-        System.out.println(arg);
+        System.out.println("Вызван prepare у " + this.getClass().getName());
     }
 
     public void setArgs(ArrayList<String> args) {

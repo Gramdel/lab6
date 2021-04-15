@@ -15,6 +15,16 @@ public class Exit extends Command {
     }
 
     @Override
+    public void prepare(String arg, boolean isInteractive) {
+        if (!arg.matches("\\s*")) {
+            System.out.println("У команды exit не может быть аргументов!");
+        } else {
+            System.out.println("Комманда exit выполнена, программа завершает работу.");
+            System.exit(0);
+        }
+    }
+
+    @Override
     public String description() {
         return "Прекращает работу программы (без сохранения коллекции в файл)." + syntax();
     }

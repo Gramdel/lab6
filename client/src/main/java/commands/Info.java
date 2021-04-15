@@ -22,6 +22,18 @@ public class Info extends Command {
     }
 
     @Override
+    public void prepare(String arg, boolean isInteractive) {
+        if (!arg.matches("\\s*")) {
+            System.out.println("У команды info не может быть аргументов!");
+        }
+    }
+
+    @Override
+    public String execute() {
+        return "Тип коллекции:\n" + getCollection().getClass() + "\n" + "Дата инициализации коллекции:\n" + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(getDate()) + "\n" + "Количество элементов коллекции:\n" + getCollection().size();
+    }
+
+    @Override
     public String description() {
         return "Выводит информацию о коллекции." + syntax();
     }
