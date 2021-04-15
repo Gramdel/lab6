@@ -1,7 +1,6 @@
 package commands;
 
 import collection.Product;
-import java.util.ArrayList;
 import static core.Main.getCollection;
 
 public class Show extends Command {
@@ -10,17 +9,13 @@ public class Show extends Command {
     }
 
     @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
+    public String execute() {
         if (getCollection().size() > 0) {
-            System.out.println("Элементы коллекции:");
-            ArrayList<Product> sortedCollection = new ArrayList<>(getCollection());
-            sortedCollection.sort(Product.byIdComparator);
-            for (Product product : sortedCollection) {
-                System.out.println(product);
-            }
+            StringBuilder msg = new StringBuilder();
+            getCollection().stream().sorted(Product.byIdComparator).forEach(p -> msg.append("\n").append(p));
+            return "Элементы коллекции:" + msg.toString();
         } else {
-            throw new ExecuteException("Коллекция пуста!");
+            return "Коллекция пуста!";
         }
     }
 

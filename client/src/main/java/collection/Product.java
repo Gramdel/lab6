@@ -18,8 +18,13 @@ public class Product implements Comparable<Product>, Serializable {
     private UnitOfMeasure unitOfMeasure; //Поле не может быть null
     private Organization manufacturer; //Поле может быть null
 
+    public Product(){
+        createId();
+        this.creationDate = ZonedDateTime.now();
+    }
+
     public Product(String name, Coordinates coordinates, float price, String partNumber, Float manufactureCost, UnitOfMeasure unitOfMeasure, Organization manufacturer) {
-        this.id = createId();
+        createId();
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = ZonedDateTime.now();
@@ -96,7 +101,7 @@ public class Product implements Comparable<Product>, Serializable {
 
     public static Comparator<Product> byPriceComparator = (p1, p2) -> Float.compare(p1.price, p2.price);
 
-    private Long createId() {
+    public void createId() {
         Long id = 1L;
         boolean isUnique;
         do {
@@ -109,7 +114,7 @@ public class Product implements Comparable<Product>, Serializable {
                 }
             }
         } while (!isUnique);
-        return id;
+        this.id = id;
     }
 
     public String getName() {

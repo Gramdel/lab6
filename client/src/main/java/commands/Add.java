@@ -1,16 +1,23 @@
 package commands;
 
 import collection.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import core.Creator;
 
 import static core.Main.*;
 
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Add extends Command {
+    private Product product;
     private boolean successMsg = true;
     private boolean failureMsg = true;
 
@@ -346,5 +353,39 @@ public class Add extends Command {
 
     public void hideFailureMsg(){
         failureMsg = false;
+    }
+
+    @Override
+    public void prepare(String arg, boolean isInteractive) {
+        Product product = null;
+        try {
+            if (isInteractive) {
+                if (!arg.matches("\\s*")){
+                    throw new IllegalArgumentException("У команды add не может быть аргументов!");
+                }
+            } else {
+                if (!arg.matches("\\s*\\{.*}\\s*")){
+                    throw new IllegalArgumentException("У команды add должен быть 1 аргумент: JSON-строка!");
+                } else {
+                    Matcher m = Pattern.compile("\\{.*}").matcher(arg);
+                    if (m.find()) {
+                        product = new Gson().fromJson(m.group(), Product.class);
+                        product.getManufacturer().createId();
+                    }
+                }
+            }
+            product = Creator.createProduct(product,isInteractive);
+        } catch (JsonSyntaxException | NumberFormatException e) {
+            System.out.println("Ошибка в синтаксисе JSON-строки!");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+        this.product = product;
+    }
+
+    @Override
+    public String execute() {
+        getCollection().add(product);
+        return "Элемент успешно добавлен в коллекцию!";
     }
 }

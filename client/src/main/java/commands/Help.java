@@ -14,8 +14,8 @@ public class Help extends Command {
     public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
         rightArg(args);
         System.out.println("Список допустимых команд:");
-        for (Map.Entry<Command, String> entry : getInterpreter().getCommands().entrySet())
-            System.out.println("\t" + entry.getValue() + " - " + entry.getKey().description());
+        for (Map.Entry<String, Command> entry : getInterpreter().getCommands().entrySet())
+            System.out.println("\t" + entry.getKey() + " - " + entry.getValue().description());
     }
 
     @Override

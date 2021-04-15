@@ -5,14 +5,14 @@ import java.io.Serializable;
 import static core.Main.getOrganizations;
 
 public class Organization implements Serializable {
-    private final Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+    private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private final String name; //Поле не может быть null, Строка не может быть пустой
     private final Long annualTurnover; //Поле может быть null, Значение поля должно быть больше 0
     private final Long employeesCount; //Поле может быть null, Значение поля должно быть больше 0
     private final OrganizationType type; //Поле может быть null
 
     public Organization(String name, Long annualTurnover, Long employeesCount, OrganizationType type) {
-        this.id = getOrganizations().size() + 1;
+        createId();
         this.name = name;
         this.annualTurnover = annualTurnover;
         this.employeesCount = employeesCount;
@@ -83,5 +83,25 @@ public class Organization implements Serializable {
 
     public OrganizationType getType() {
         return type;
+    }
+
+    public void createId() {
+        Integer id = 1;
+        boolean isUnique;
+        do {
+            isUnique = true;
+            for (Organization manufacturer : getOrganizations()) {
+                if (manufacturer.getId().equals(id)) {
+                    isUnique = false;
+                    id++;
+                    break;
+                }
+            }
+        } while (!isUnique);
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }
