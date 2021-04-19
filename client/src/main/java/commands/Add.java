@@ -7,7 +7,6 @@ import core.Creator;
 
 import static core.Main.*;
 
-import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -356,7 +355,7 @@ public class Add extends Command {
     }
 
     @Override
-    public void prepare(String arg, boolean isInteractive) {
+    public boolean prepare(String arg, boolean isInteractive) {
         Product product = null;
         try {
             if (isInteractive) {
@@ -375,12 +374,19 @@ public class Add extends Command {
                 }
             }
             product = Creator.createProduct(product,isInteractive);
+            if (product == null) {
+                System.out.println("Команда add не выполнена!");
+                return false;
+            }
         } catch (JsonSyntaxException | NumberFormatException e) {
             System.out.println("Ошибка в синтаксисе JSON-строки!");
+            return false;
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
+            return false;
         }
         this.product = product;
+        return true;
     }
 
     @Override

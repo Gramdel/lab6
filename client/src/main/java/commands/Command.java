@@ -2,7 +2,6 @@ package commands;
 
 import collection.Product;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -27,8 +26,9 @@ public abstract class Command implements Serializable {
     public void setReceivedProduct(Product receivedProduct) {
         this.receivedProduct = receivedProduct;
     }
-    public void prepare(String arg, boolean isInteractive) {
+    public boolean prepare(String arg, boolean isInteractive) {
         System.out.println("Вызван prepare у " + this.getClass().getName());
+        return true;
     }
 
     public void setArgs(ArrayList<String> args) {

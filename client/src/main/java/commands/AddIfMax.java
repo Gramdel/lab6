@@ -1,53 +1,21 @@
 package commands;
 
 import collection.Product;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import core.Creator;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static core.Main.getCollection;
 
 public class AddIfMax extends Command{
+    private Product product;
+
     public AddIfMax() {
         super(0);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        if (caller != null) argCount = 11;
-        rightArg(args);
-
-        if (getCollection().size() > 0) {
-            try {
-                Add add = new Add();
-                add.hideSuccessMsg();
-                add.hideFailureMsg();
-                if (args.size() > 0) {
-                    add.execute(args, this);
-                } else {
-                    add.execute(args, null);
-                }
-            } catch (ExecuteException e) {
-                throw new ExecuteException("Невозможно сравнить цену добавляемого элемента из-за ошибок при его вводе:"+e.getMessage());
-            }
-            ArrayList<Product> sortedCollection = new ArrayList<>(getCollection());
-            Collections.sort(sortedCollection);
-            Product product = sortedCollection.get(sortedCollection.size() - 1);
-            sortedCollection.sort(Product.byPriceComparator);
-
-            if (sortedCollection.get(sortedCollection.size()-1).getPrice()==product.getPrice()) {
-                System.out.println("Элемент добавлен в коллекцию, т.к. его цена - наибольшая в коллекции!");
-            } else {
-                RemoveById removeById = new RemoveById();
-                removeById.hideSuccessMsg();
-                ArrayList<String> arg = new ArrayList<>();
-                arg.add(product.getId().toString());
-                removeById.execute(arg, null);
-                throw new ExecuteException("Элемент не добавлен в коллекцию, т.к. его цена не является наибольшей ценой элемента в коллекции.");
-            }
-        } else {
-            throw new ExecuteException("Коллекция пуста, поэтому цену добавляемого элемента не с чем сравнить.");
-        }
     }
 
     @Override
@@ -58,5 +26,54 @@ public class AddIfMax extends Command{
     @Override
     public String syntax() {
         return " Синтаксис: add_if_max \n\t\t(В скриптах - add_if_max {element}, где {element} - JSON-строка)";
+    }
+
+    @Override
+    public boolean prepare(String arg, boolean isInteractive) {
+        Product product = null;
+        try {
+            if (isInteractive) {
+                if (!arg.matches("\\s*")){
+                    throw new IllegalArgumentException("У команды add_if_max не может быть аргументов!");
+                }
+            } else {
+                if (!arg.matches("\\s*\\{.*}\\s*")){
+                    throw new IllegalArgumentException("У команды add_if_max должен быть 1 аргумент: JSON-строка!");
+                } else {
+                    Matcher m = Pattern.compile("\\{.*}").matcher(arg);
+                    if (m.find()) {
+                        product = new Gson().fromJson(m.group(), Product.class);
+                        product.getManufacturer().createId();
+                    }
+                }
+            }
+            product = Creator.createProduct(product,isInteractive);
+            if (product == null) {
+                System.out.println("Команда add_if_max не выполнена!");
+                return false;
+            }
+        } catch (JsonSyntaxException | NumberFormatException e) {
+            System.out.println("Ошибка в синтаксисе JSON-строки!");
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        this.product = product;
+        return true;
+    }
+
+    @Override
+    public String execute() {
+        try {
+            if (product.getPrice() >= getCollection().stream().max(Product.byPriceComparator).get().getPrice()) {
+                getCollection().add(product);
+                return "Элемент добавлен в коллекцию, т.к. его цена - наибольшая в коллекции!";
+            } else {
+                return "Элемент не добавлен в коллекцию, т.к. его цена - НЕ наибольшая в коллекции.";
+            }
+        } catch (NoSuchElementException e) {
+            return "Элемент добавлен в коллекцию вне зависимости от цены, потому что коллекция пуста!";
+        }
     }
 }

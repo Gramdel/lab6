@@ -50,8 +50,9 @@ public class Interpreter {
                 addToHistory(com);
                 Command command = commands.get(com);
                 if (command != null) {
-                    command.prepare(arg, stream.equals(System.in));
-                    System.out.println(command.execute());
+                    if (command.prepare(arg, stream.equals(System.in))) {
+                        System.out.println(command.execute());
+                    }
                 } else {
                     System.out.println("Такой команды не существует! Список команд: help");
                 }

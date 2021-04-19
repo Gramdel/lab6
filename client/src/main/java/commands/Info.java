@@ -22,10 +22,12 @@ public class Info extends Command {
     }
 
     @Override
-    public void prepare(String arg, boolean isInteractive) {
+    public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {
             System.out.println("У команды info не может быть аргументов!");
+            return false;
         }
+        return true;
     }
 
     @Override
