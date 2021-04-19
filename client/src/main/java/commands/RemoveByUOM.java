@@ -3,30 +3,17 @@ package commands;
 import collection.Product;
 import collection.UnitOfMeasure;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static core.Main.getCollection;
 
 public class RemoveByUOM extends Command {
+    private UnitOfMeasure unitOfMeasure;
+
     public RemoveByUOM() {
         super(1);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
-        int prevSize = getCollection().size();
-        for (Iterator<Product> iter = getCollection().iterator(); iter.hasNext(); ) {
-            if (args.get(0).equals(iter.next().getUnitOfMeasure().toString())) {
-                iter.remove();
-                break;
-            }
-        }
-        if (getCollection().size() < prevSize) {
-            throw new ExecuteException("С коллекции удалён один из элементов с unitOfMeasure " + args.get(0) + ".");
-        } else {
-            throw new ExecuteException("В коллекции нет ни одного элемента с unitOfMeasure " + args.get(0) + "!");
-        }
     }
 
     @Override
@@ -40,12 +27,31 @@ public class RemoveByUOM extends Command {
     }
 
     @Override
-    protected void rightArg(ArrayList<String> args) throws ExecuteException{
-        super.rightArg(args);
+    public boolean prepare(String arg, boolean isInteractive) {
         try {
-            UnitOfMeasure.fromString(args.get(0));
+            if (!arg.matches("\\s*[^\\s]+\\s*")) {
+                throw new IllegalArgumentException();
+            } else {
+                Matcher m = Pattern.compile("[^\\s]+").matcher(arg);
+                if (m.find()) {
+                    unitOfMeasure = UnitOfMeasure.fromString(m.group());
+                }
+            }
         } catch (IllegalArgumentException e) {
-            throw new ExecuteException("Неправильный ввод единиц измерения! Возможные варианты ввода: " + UnitOfMeasure.valueList() + ".");
+            System.out.println("У команды remove_any_by_unit_of_measure должен быть 1 аргумент из следующего списка: " + UnitOfMeasure.valueList() + ".");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String execute() {
+        try {
+            Product product = getCollection().stream().filter(x -> x.getUnitOfMeasure().equals(unitOfMeasure)).findAny().get();
+            getCollection().remove(product);
+            return "Один из элементов с unitOfMeasure "+unitOfMeasure+" успешно удалён!";
+        } catch (NoSuchElementException e) {
+            return "Удаление невозможно, так как в коллекции нет элемента с unitOfMeasure "+unitOfMeasure+".";
         }
     }
 }

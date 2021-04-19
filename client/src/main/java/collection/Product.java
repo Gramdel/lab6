@@ -24,7 +24,6 @@ public class Product implements Comparable<Product>, Serializable {
     }
 
     public Product(String name, Coordinates coordinates, float price, String partNumber, Float manufactureCost, UnitOfMeasure unitOfMeasure, Organization manufacturer) {
-        createId();
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = ZonedDateTime.now();
@@ -107,7 +106,7 @@ public class Product implements Comparable<Product>, Serializable {
         do {
             isUnique = true;
             for (Product product : getCollection()) {
-                if (product.getId().equals(id)) {
+                if (product.getId() != null && product.getId().equals(id)) {
                     isUnique = false;
                     id++;
                     break;
@@ -121,15 +120,15 @@ public class Product implements Comparable<Product>, Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Coordinates getCoordinates() {
         return coordinates;
     }
 
     public Float getManufactureCost() {
         return manufactureCost;
+    }
+
+    public void setManufacturer(Organization manufacturer) {
+        this.manufacturer = manufacturer;
     }
 }

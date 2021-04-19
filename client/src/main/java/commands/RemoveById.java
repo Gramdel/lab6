@@ -2,42 +2,18 @@ package commands;
 
 import collection.Product;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static core.Main.getCollection;
 import static core.Main.getOrganizations;
 
 public class RemoveById extends Command {
-    private boolean successMsg = true;
+    private Long id;
 
     public RemoveById() {
         super(1);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
-        int prevSize = getCollection().size();
-        for (Iterator<Product> iter = getCollection().iterator(); iter.hasNext(); ) {
-            Product product = iter.next();
-            if (args.get(0).equals(product.getId().toString())) {
-                if (caller != null) caller.setReceivedProduct(product);
-                iter.remove();
-                if (successMsg) System.out.println("Элемент с id "+args.get(0)+" успешно удалён!");
-
-                boolean removeOrg = true;
-                for (Product p : getCollection()) {
-                    if (p.getManufacturer().equals(product.getManufacturer())) {
-                        removeOrg = false;
-                        break;
-                    }
-                }
-                if (removeOrg) getOrganizations().remove(product.getManufacturer());
-                break;
-            }
-        }
-        if (prevSize == getCollection().size()) throw new ExecuteException("В коллекции нет элемента с id "+args.get(0)+"!");
     }
 
     @Override
@@ -51,16 +27,34 @@ public class RemoveById extends Command {
     }
 
     @Override
-    protected void rightArg(ArrayList<String> args) throws ExecuteException {
-        super.rightArg(args);
+    public boolean prepare(String arg, boolean isInteractive) {
         try {
-            Long.parseLong(args.get(0));
+            if (!arg.matches("\\s*[^\\s]+\\s*")) {
+                throw new NumberFormatException();
+            } else {
+                Matcher m = Pattern.compile("[^\\s]+").matcher(arg);
+                if (m.find()) {
+                    id = Long.parseLong(m.group());
+                }
+            }
         } catch (NumberFormatException e) {
-            throw new ExecuteException("Неправильный ввод id! Требуемый формат: положительное целое число.");
+            System.out.println("У команды remove_by_id должен быть 1 аргумент - положительное целое число!");
+            return false;
         }
+        return true;
     }
 
-    public void hideSuccessMsg() {
-        successMsg = false;
+    @Override
+    public String execute() {
+        try {
+            Product product = getCollection().stream().filter(x -> x.getId().equals(id)).findFirst().get();
+            if (getCollection().stream().filter(x -> x.getManufacturer().equals(product.getManufacturer())).count() == 1) {
+                getOrganizations().remove(product.getManufacturer());
+            }
+            getCollection().remove(product);
+            return "Элемент с id "+id+" успешно удалён!";
+        } catch (NoSuchElementException e) {
+            return "Удаление невозможно, так как в коллекции нет элемента с id "+id+".";
+        }
     }
 }

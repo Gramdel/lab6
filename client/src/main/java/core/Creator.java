@@ -9,7 +9,7 @@ import static core.Main.getCollection;
 import static core.Main.getOrganizations;
 
 public class Creator {
-    public static Product createProduct(Product product, boolean isInteractive) throws NullPointerException {
+    public static Product createProduct(Product product, boolean isInteractive) {
         Stack<String> errors = new Stack<>();
         String name;
         while (true) {
@@ -102,16 +102,7 @@ public class Creator {
             } else {
                 partNumber = product.getPartNumber();
             }
-            if (partNumber != null && partNumber.matches("#\\d{6}")) {
-                String finalPartNumber = partNumber;
-                if(getCollection().stream().anyMatch(p -> p.getPartNumber().equals(finalPartNumber))) {
-                    errors.push("Неправильный ввод кода производителя! Элемент с таким номером уже есть в коллекции.");
-                    if (isInteractive) {
-                        System.out.println(errors.pop());
-                        continue;
-                    }
-                }
-            } else {
+            if (partNumber == null || !partNumber.matches("#\\d{6}")) {
                 errors.push("Неправильный ввод кода производителя! Требуемый формат: #xxxxxx, где x - цифры.");
                 if (isInteractive) {
                     System.out.println(errors.pop());
@@ -269,16 +260,109 @@ public class Creator {
             break;
         }
         if (errors.isEmpty()) {
-            Organization manufacturer = new Organization(manufacturerName,annualTurnover,employeesCount,type);
-            if(getOrganizations().contains(manufacturer)) {
-                for (Organization o : getOrganizations()) {
-                    if (o.equals(manufacturer)) {
-                        manufacturer = o;
-                        break;
-                    }
+            Organization manufacturer = new Organization(manufacturerName, annualTurnover, employeesCount, type);
+            return new Product(name, new Coordinates(x,y), price, partNumber, manufactureCost, unitOfMeasure, manufacturer);
+        } else {
+            System.out.println("Возникли следующие ошибки:");
+            errors.forEach(System.out::println);
+        }
+        return null;
+    }
+
+    public static Organization createManufacturer(Organization manufacturer, boolean isInteractive) {
+        Stack<String> errors = new Stack<>();
+        String name;
+        while (true) {
+            if (isInteractive) {
+                System.out.println("Введите название компании-производителя:");
+                Scanner in = new Scanner(System.in);
+                name = in.nextLine();
+            } else {
+                name = manufacturer.getName();
+            }
+            if (name == null || name.matches("\\s*")) {
+                errors.push("Неправильный ввод названия компании-производителя! Оно не может быть пустой строкой.");
+                if (isInteractive) {
+                    System.out.println(errors.pop());
+                    continue;
                 }
             }
-            return new Product(name, new Coordinates(x,y), price, partNumber, manufactureCost, unitOfMeasure, manufacturer);
+            break;
+        }
+        Long annualTurnover = null;
+        while (true) {
+            try {
+                if (isInteractive) {
+                    System.out.println("Введите годовой оборот компании-производителя (пустая строка или целое положительное число):");
+                    Scanner in = new Scanner(System.in);
+                    String s = in.nextLine();
+                    if (!s.matches("\\s*")) {
+                        annualTurnover = Long.parseLong(s);
+                    }
+                } else {
+                    annualTurnover = manufacturer.getAnnualTurnover();
+                }
+                if (annualTurnover != null && annualTurnover <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                errors.push("Неправильный ввод ежегодного оборота компании-производителя! Требуемый формат: пустая строка или целое положительное число.");
+                if (isInteractive) {
+                    System.out.println(errors.pop());
+                    continue;
+                }
+            }
+            break;
+        }
+        Long employeesCount = null;
+        while (true) {
+            try {
+                if (isInteractive) {
+                    System.out.println("Введите количество сотрудников компании-производителя (пустая строка или целое положительное число):");
+                    Scanner in = new Scanner(System.in);
+                    String s = in.nextLine();
+                    if (!s.matches("\\s*")) {
+                        employeesCount = Long.parseLong(s);
+                    }
+                } else {
+                    employeesCount = manufacturer.getEmployeesCount();
+                }
+                if (employeesCount != null && employeesCount <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                errors.push("Неправильный ввод количества сотрудников компании-производителя! Требуемый формат: пустая строка или целое положительное число.");
+                if (isInteractive) {
+                    System.out.println(errors.pop());
+                    continue;
+                }
+            }
+            break;
+        }
+        OrganizationType type = null;
+        while (true) {
+            try {
+                if (isInteractive) {
+                    System.out.println("Введите тип компании-производителя (пустая строка, "+OrganizationType.valueList()+"):");
+                    Scanner in = new Scanner(System.in);
+                    String s = in.nextLine();
+                    if (!s.equals("")) {
+                        type = OrganizationType.fromString(s);
+                    }
+                } else {
+                    type = manufacturer.getType();
+                }
+            } catch (IllegalArgumentException e) {
+                errors.push("Неправильный ввод типа компании-производителя! Возможные варианты ввода: пустая строка, "+OrganizationType.valueList()+".");
+                if (isInteractive) {
+                    System.out.println(errors.pop());
+                    continue;
+                }
+            }
+            break;
+        }
+        if (errors.isEmpty()) {
+            return new Organization(name,annualTurnover,employeesCount,type);
         } else {
             System.out.println("Возникли следующие ошибки:");
             errors.forEach(System.out::println);

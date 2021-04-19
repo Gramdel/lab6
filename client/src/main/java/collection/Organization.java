@@ -12,7 +12,6 @@ public class Organization implements Serializable {
     private final OrganizationType type; //Поле может быть null
 
     public Organization(String name, Long annualTurnover, Long employeesCount, OrganizationType type) {
-        createId();
         this.name = name;
         this.annualTurnover = annualTurnover;
         this.employeesCount = employeesCount;
@@ -91,7 +90,7 @@ public class Organization implements Serializable {
         do {
             isUnique = true;
             for (Organization manufacturer : getOrganizations()) {
-                if (manufacturer.getId().equals(id)) {
+                if (manufacturer.getId() != null && manufacturer.getId().equals(id)) {
                     isUnique = false;
                     id++;
                     break;

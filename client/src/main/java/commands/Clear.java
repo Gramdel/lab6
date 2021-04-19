@@ -10,17 +10,6 @@ public class Clear extends Command {
     }
 
     @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
-        if(getCollection().size()>0) {
-            getCollection().clear();
-            System.out.println("Коллекция очищена.");
-        } else {
-            throw new ExecuteException("Коллекция уже очищена!");
-        }
-    }
-
-    @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {
             System.out.println("У команды clear не может быть аргументов!");

@@ -1,62 +1,22 @@
 package commands;
 
 import collection.Product;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import core.Creator;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static core.Main.getCollection;
+import static core.Main.getOrganizations;
 
-public class RemoveGreater extends Command{
+public class RemoveGreater extends Command {
+    private Product product;
+
     public RemoveGreater() {
         super(0);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException{
-        if (caller != null) argCount = 11;
-        rightArg(args);
-        if (getCollection().size() > 0) {
-            int prevSize = getCollection().size();
-
-            try {
-                Add add = new Add();
-                add.hideSuccessMsg();
-                add.hideFailureMsg();
-                if (args.size() > 0) {
-                    add.execute(args, this);
-                } else {
-                    add.execute(args, null);
-                }
-            } catch (ExecuteException e) {
-                throw new ExecuteException("Удаление из коллекции элементов, цена которых больше цены данного, невозможно из-за ошибок ввода:"+e.getMessage());
-            }
-
-            ArrayList<Product> sortedCollection = new ArrayList<>(getCollection());
-            Collections.sort(sortedCollection);
-            Product product = sortedCollection.get(sortedCollection.size() - 1);
-
-            RemoveById removeById = new RemoveById();
-            removeById.hideSuccessMsg();
-            for (int i = 0; i < sortedCollection.size() - 1; i++) {
-                if (Product.byPriceComparator.compare(sortedCollection.get(i), product) > 0) {
-                    ArrayList<String> arg = new ArrayList<>();
-                    arg.add(sortedCollection.get(i).getId().toString());
-                    removeById.execute(arg, null);
-                }
-            }
-            ArrayList<String> arg = new ArrayList<>();
-            arg.add(product.getId().toString());
-            removeById.execute(arg, null);
-
-            if (prevSize > getCollection().size()) {
-                System.out.println("Элементы, цена которых больше цены данного, успешно удалены!");
-            } else {
-                throw new ExecuteException("В коллекции нет элементов, цена которых больше цены данного, ничего не удалено.");
-            }
-        } else {
-            throw new ExecuteException("Т.к. коллекция пуста, невозможно удалить из неё элементы, цена которых больше цены данного.");
-        }
     }
 
     @Override
@@ -67,5 +27,64 @@ public class RemoveGreater extends Command{
     @Override
     public String syntax() {
         return " Синтаксис: remove_greater \n\t\t(В скриптах - remove_greater {element}, где {element} - JSON-строка)";
+    }
+
+    @Override
+    public boolean prepare(String arg, boolean isInteractive) {
+        Product product = null;
+        try {
+            if (isInteractive) {
+                if (!arg.matches("\\s*")){
+                    throw new IllegalArgumentException("У команды remove_greater не может быть аргументов!");
+                }
+            } else {
+                if (!arg.matches("\\s*\\{.*}\\s*")){
+                    throw new IllegalArgumentException("У команды remove_greater должен быть 1 аргумент: JSON-строка!");
+                } else {
+                    Matcher m = Pattern.compile("\\{.*}").matcher(arg);
+                    if (m.find()) {
+                        product = new Gson().fromJson(m.group(), Product.class);
+                        product.getManufacturer().createId();
+                    }
+                }
+            }
+            product = Creator.createProduct(product,isInteractive);
+            if (product == null) {
+                System.out.println("Команда remove_greater не выполнена!");
+                return false;
+            }
+        } catch (JsonSyntaxException | NumberFormatException e) {
+            System.out.println("Ошибка в синтаксисе JSON-строки!");
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        this.product = product;
+        return true;
+    }
+
+    @Override
+    public String execute() {
+        int prevSize = getCollection().size();
+        if (prevSize == 0) {
+            return "Т.к. коллекция пуста, невозможно удалить из неё элементы, цена которых больше цены данного.";
+        } else {
+            for (Iterator<Product> iter = getCollection().iterator(); iter.hasNext(); ) {
+                Product product = iter.next();
+                if (this.product.getPrice() < product.getPrice()) {
+                    if (getCollection().stream().filter(x -> x.getManufacturer().equals(product.getManufacturer())).count() == 1) {
+                        getOrganizations().remove(product.getManufacturer());
+                    }
+                    iter.remove();
+                }
+            }
+            getCollection().stream().filter(x -> x.getPrice() > product.getPrice()).forEach(x -> getCollection().remove(x));
+            if (prevSize > getCollection().size()) {
+                return "Элементы, цена которых больше цены данного, успешно удалены!";
+            } else {
+                return "В коллекции нет элементов, цена которых больше цены данного, ничего не удалено.";
+            }
+        }
     }
 }

@@ -2,9 +2,6 @@ package commands;
 
 import core.Interpreter;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import static core.Main.getInterpreter;
 
 public class Help extends Command {
@@ -12,15 +9,6 @@ public class Help extends Command {
 
     public Help() {
         super(0);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
-        System.out.println("Список допустимых команд:");
-        getInterpreter().getCommands().forEach((commandName,command) -> System.out.println("\t" + commandName + " - " + command.description()));
-        for (Map.Entry<String, Command> entry : getInterpreter().getCommands().entrySet())
-            System.out.println("\t" + entry.getKey() + " - " + entry.getValue().description());
     }
 
     @Override

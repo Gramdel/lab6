@@ -1,5 +1,6 @@
 package commands;
 
+import collection.Organization;
 import collection.Product;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -10,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static core.Main.getCollection;
+import static core.Main.getOrganizations;
 
 public class AddIfMax extends Command{
     private Product product;
@@ -43,7 +45,6 @@ public class AddIfMax extends Command{
                     Matcher m = Pattern.compile("\\{.*}").matcher(arg);
                     if (m.find()) {
                         product = new Gson().fromJson(m.group(), Product.class);
-                        product.getManufacturer().createId();
                     }
                 }
             }
@@ -67,6 +68,18 @@ public class AddIfMax extends Command{
     public String execute() {
         try {
             if (product.getPrice() >= getCollection().stream().max(Product.byPriceComparator).get().getPrice()) {
+                if (getOrganizations().contains(product.getManufacturer())) {
+                    for (Organization o : getOrganizations()) {
+                        if (o.equals(product.getManufacturer())) {
+                            product.setManufacturer(o);
+                            break;
+                        }
+                    }
+                } else {
+                    product.getManufacturer().createId();
+                    getOrganizations().add(product.getManufacturer());
+                }
+                product.createId();
                 getCollection().add(product);
                 return "Элемент добавлен в коллекцию, т.к. его цена - наибольшая в коллекции!";
             } else {

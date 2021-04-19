@@ -1,43 +1,23 @@
 package commands;
 
-import java.util.ArrayList;
+import collection.Organization;
+import collection.Product;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import core.Creator;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static core.Main.getCollection;
 import static core.Main.getOrganizations;
 
 public class Update extends Command {
+    private Product product;
+    private Long id;
+
     public Update() {
         super(1);
-    }
-
-    @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        if (caller != null) argCount = 12;
-        rightArg(args);
-        try {
-            RemoveById removeById = new RemoveById();
-            removeById.hideSuccessMsg();
-            removeById.execute(new ArrayList<>(args.subList(0,1)), this);
-        } catch (ExecuteException e) {
-            throw new ExecuteException("Элемент не обновлён! "+e.getMessage());
-        }
-        try {
-            Add add = new Add();
-            add.hideSuccessMsg();
-            add.hideFailureMsg();
-            add.setId(receivedProduct.getId().toString());
-            add.setCreationDate(receivedProduct.getCreationDate());
-            args.remove(0);
-            if (args.size()>0) {
-                add.execute(args, this);
-            } else {
-                add.execute(args, null);
-            }
-            System.out.println("Элемент c id " + receivedProduct.getId() + " успешно обновлён!");
-        } catch (ExecuteException e) {
-            getCollection().add(receivedProduct);
-            if (!getOrganizations().contains(receivedProduct.getManufacturer())) getOrganizations().add(receivedProduct.getManufacturer());
-            throw new ExecuteException("Элемент c id " + receivedProduct.getId() + " не обновлён из-за следующих ошибок:"+e.getMessage());
-        }
     }
 
     @Override
@@ -51,12 +31,83 @@ public class Update extends Command {
     }
 
     @Override
-    protected void rightArg(ArrayList<String> args) throws ExecuteException {
-        super.rightArg(args);
+    public boolean prepare(String arg, boolean isInteractive) {
+        Product product = null;
         try {
-            Long.parseLong(args.get(0));
-        } catch (NumberFormatException e) {
-            throw new ExecuteException("Неправильный ввод id! Требуемый формат: целое положительное число.");
+            if (isInteractive) {
+                if (!arg.matches("\\s*\\d+\\s*")){
+                    throw new IllegalArgumentException("У команды update быть 1 аргумент - положительное целое число!");
+                } else {
+                    Matcher m = Pattern.compile("\\d+").matcher(arg);
+                    if (m.find()) {
+                        try {
+                            id = Long.parseLong(m.group());
+                        } catch (NumberFormatException e) {
+                            throw new IllegalArgumentException("У команды update быть 1 аргумент - положительное целое число!");
+                        }
+                    }
+                }
+            } else {
+                if (!arg.matches("\\s*\\d+\\s+\\{.*}\\s*")){
+                    throw new IllegalArgumentException("У команды update должно быть 2 аргумента: положительное целое число и JSON-строка!");
+                } else {
+                    Matcher m = Pattern.compile("\\{.*}").matcher(arg);
+                    if (m.find()) {
+                        product = new Gson().fromJson(m.group(), Product.class);
+                    }
+                    m = Pattern.compile("\\d+").matcher(arg);
+                    if (m.find()) {
+                        try {
+                            id = Long.parseLong(m.group());
+                        } catch (NumberFormatException e) {
+                            throw new IllegalArgumentException("У команды update должно быть 2 аргумента: положительное целое число и JSON-строка!");
+                        }
+                    }
+                }
+            }
+            product = Creator.createProduct(product, isInteractive);
+            if (product == null) {
+                System.out.println("Команда update не выполнена!");
+                return false;
+            }
+        } catch (JsonSyntaxException | NumberFormatException e) {
+            System.out.println("Ошибка в синтаксисе JSON-строки!");
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        this.product = product;
+        return true;
+    }
+
+    @Override
+    public String execute() {
+        if (getCollection().stream().noneMatch(x -> x.getId().equals(id))) {
+            return "Нечего обновлять: элемента с id " + id + " нет в коллекции!";
+        } else {
+            Product product = getCollection().stream().filter(x -> x.getId().equals(id)).findFirst().get();
+            if (!product.getManufacturer().equals(this.product.getManufacturer())) {
+                if (getCollection().stream().filter(x -> x.getManufacturer().equals(product.getManufacturer())).count() == 1) {
+                    getOrganizations().remove(product.getManufacturer());
+                }
+                if (getOrganizations().contains(this.product.getManufacturer())) {
+                    for (Organization o : getOrganizations()) {
+                        if (o.equals(this.product.getManufacturer())) {
+                            this.product.setManufacturer(o);
+                            break;
+                        }
+                    }
+                } else {
+                    this.product.getManufacturer().createId();
+                    getOrganizations().add(this.product.getManufacturer());
+                }
+            }
+            getCollection().remove(product);
+            this.product.setId(id);
+            getCollection().add(this.product);
+            System.out.println("\t"+getOrganizations());
+            return "Элемент c id " + id + " успешно обновлён!";
         }
     }
 }

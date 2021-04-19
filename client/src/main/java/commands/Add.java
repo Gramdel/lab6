@@ -369,11 +369,10 @@ public class Add extends Command {
                     Matcher m = Pattern.compile("\\{.*}").matcher(arg);
                     if (m.find()) {
                         product = new Gson().fromJson(m.group(), Product.class);
-                        product.getManufacturer().createId();
                     }
                 }
             }
-            product = Creator.createProduct(product,isInteractive);
+            product = Creator.createProduct(product, isInteractive);
             if (product == null) {
                 System.out.println("Команда add не выполнена!");
                 return false;
@@ -391,6 +390,18 @@ public class Add extends Command {
 
     @Override
     public String execute() {
+        if (getOrganizations().contains(product.getManufacturer())) {
+            for (Organization o : getOrganizations()) {
+                if (o.equals(product.getManufacturer())) {
+                    product.setManufacturer(o);
+                    break;
+                }
+            }
+        } else {
+            product.getManufacturer().createId();
+            getOrganizations().add(product.getManufacturer());
+        }
+        product.createId();
         getCollection().add(product);
         return "Элемент успешно добавлен в коллекцию!";
     }
