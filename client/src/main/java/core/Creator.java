@@ -5,9 +5,6 @@ import collection.*;
 import java.util.Scanner;
 import java.util.Stack;
 
-import static core.Main.getCollection;
-import static core.Main.getOrganizations;
-
 public class Creator {
     public static Product createProduct(Product product, boolean isInteractive) {
         Stack<String> errors = new Stack<>();

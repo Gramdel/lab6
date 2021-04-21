@@ -1,20 +1,15 @@
 package core;
 
-import collection.Product;
 import commands.*;
-import org.json.simple.parser.ParseException;
 
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static core.ParseUnit.parseJson;
-
 public class Interpreter {
     private final HashMap<String, Command> commands = new HashMap<>();
     private final LinkedList<String> history = new LinkedList<>();
-    private Command caller = null;
 
     {
         commands.put("add", new Add());
@@ -71,9 +66,5 @@ public class Interpreter {
     private void addToHistory(String com) {
         history.add(com);
         if (history.size() > 7) history.remove();
-    }
-
-    public void setCaller(Command caller) {
-        this.caller = caller;
     }
 }

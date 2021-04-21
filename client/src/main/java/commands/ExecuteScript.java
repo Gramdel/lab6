@@ -31,7 +31,7 @@ public class ExecuteScript extends Command {
                 System.out.println("Скрипт из файла " + args.get(0) + " начинает выполняться...");
 
                 scripts.push(args.get(0));
-                getInterpreter().setCaller(this);
+                //getInterpreter().setCaller(this);
                 getInterpreter().fromStream(stream);
                 if (caller == null) scripts.clear();
 
