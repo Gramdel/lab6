@@ -25,7 +25,9 @@ public class CSVUnit {
                 System.out.println("Коллекция не загружена, так как в качестве файла коллекци была передана директория!");
             } else if (!Files.isRegularFile(Paths.get(args[0]))) {
                 System.out.println("Коллекция не загружена, так как в качестве файла коллекции передан специальный файл!");
-            } else if (Files.isReadable(Paths.get(args[0]))) {
+            } else if (!Files.isReadable(Paths.get(args[0]))) {
+                System.out.println("Коллекция не заполнена данными, так как у файла коллекции нет прав на чтение.");
+            } else {
                 try (BufferedReader in = new BufferedReader(new FileReader(args[0]))) {
                     String s;
                     int count = 1;
@@ -81,8 +83,6 @@ public class CSVUnit {
                 } catch (IOException e) {
                     System.out.println("Коллекция не загружена, так как файл коллекции не найден.");
                 }
-            } else {
-                System.out.println("Коллекция не заполнена данными, так как у файла коллекции нет прав на чтение.");
             }
         } else {
             System.out.println("Коллекция не заполнена данными, так как файл коллекции не указан.");

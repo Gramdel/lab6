@@ -5,10 +5,6 @@ import collection.Product;
 import static core.Main.getCollection;
 
 public class PrintPrice extends Command {
-    public PrintPrice() {
-        super(0);
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {

@@ -1,14 +1,8 @@
 package commands;
 
-import java.util.ArrayList;
-
 import static core.Main.getCollection;
 
 public class Clear extends Command {
-    public Clear() {
-        super(0);
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {

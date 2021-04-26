@@ -12,20 +12,6 @@ import static core.Main.getOrganizations;
 public class RemoveById extends Command {
     private Long id;
 
-    public RemoveById() {
-        super(1);
-    }
-
-    @Override
-    public String description() {
-        return "Удаляет элемент из коллекции по его id." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: remove_by_id id, где id - целое положительное число.";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         try {
@@ -56,5 +42,15 @@ public class RemoveById extends Command {
         } catch (NoSuchElementException e) {
             return "Удаление невозможно, так как в коллекции нет элемента с id "+id+".";
         }
+    }
+
+    @Override
+    public String description() {
+        return "Удаляет элемент из коллекции по его id." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: remove_by_id id, где id - целое положительное число.";
     }
 }

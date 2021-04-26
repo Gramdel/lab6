@@ -16,20 +16,6 @@ import static core.Main.getOrganizations;
 public class AddIfMax extends Command{
     private Product product;
 
-    public AddIfMax() {
-        super(0);
-    }
-
-    @Override
-    public String description() {
-        return "Добавляет новый элемент в коллекцию, если его цена - наибольшая в коллекции." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: add_if_max \n\t\t(В скриптах - add_if_max {element}, где {element} - JSON-строка)";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         Product product = null;
@@ -88,5 +74,15 @@ public class AddIfMax extends Command{
         } catch (NoSuchElementException e) {
             return "Элемент добавлен в коллекцию вне зависимости от цены, потому что коллекция пуста!";
         }
+    }
+
+    @Override
+    public String description() {
+        return "Добавляет новый элемент в коллекцию, если его цена - наибольшая в коллекции." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: add_if_max \n\t\t(В скриптах - add_if_max {element}, где {element} - JSON-строка)";
     }
 }

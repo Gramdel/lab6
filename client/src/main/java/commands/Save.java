@@ -1,17 +1,14 @@
 package commands;
 
-import core.ParseUnit;
-import java.util.ArrayList;
-
 public class Save extends Command {
-    public Save() {
-        super(0);
+    @Override
+    public String execute() {
+        return null;
     }
 
     @Override
-    public void execute(ArrayList<String> args, Command caller) throws ExecuteException {
-        rightArg(args);
-        ParseUnit.toCSV();
+    public boolean prepare(String s, boolean isInteractive) {
+        return true;
     }
 
     @Override

@@ -15,20 +15,6 @@ import static core.Main.getOrganizations;
 public class RemoveGreater extends Command {
     private Product product;
 
-    public RemoveGreater() {
-        super(0);
-    }
-
-    @Override
-    public String description() {
-        return "Удаляет из коллеккции все элементы, цена которых больше цены данного." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: remove_greater \n\t\t(В скриптах - remove_greater {element}, где {element} - JSON-строка)";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         Product product = null;
@@ -86,5 +72,15 @@ public class RemoveGreater extends Command {
                 return "В коллекции нет элементов, цена которых больше цены данного, ничего не удалено.";
             }
         }
+    }
+
+    @Override
+    public String description() {
+        return "Удаляет из коллеккции все элементы, цена которых больше цены данного." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: remove_greater \n\t\t(В скриптах - remove_greater {element}, где {element} - JSON-строка)";
     }
 }

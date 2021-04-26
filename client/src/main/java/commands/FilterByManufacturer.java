@@ -14,20 +14,6 @@ import static core.Main.getCollection;
 public class FilterByManufacturer extends Command {
     private Organization manufacturer;
 
-    public FilterByManufacturer() {
-        super(0);
-    }
-
-    @Override
-    public String description() {
-        return "Выводит элементы коллекции с определённой компанией-производителем." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: filter_by_manufacturer \n\t\t(В скриптах - filter_by_manufacturer {element}, где {element} - JSON-строка)";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         Organization manufacturer = null;
@@ -71,5 +57,15 @@ public class FilterByManufacturer extends Command {
         } else {
             return "Элементы коллекции с manufacturer " + manufacturer + ":" + s.toString();
         }
+    }
+
+    @Override
+    public String description() {
+        return "Выводит элементы коллекции с определённой компанией-производителем." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: filter_by_manufacturer \n\t\t(В скриптах - filter_by_manufacturer {element}, где {element} - JSON-строка)";
     }
 }

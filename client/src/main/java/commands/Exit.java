@@ -1,10 +1,6 @@
 package commands;
 
 public class Exit extends Command {
-    public Exit() {
-        super(0);
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {

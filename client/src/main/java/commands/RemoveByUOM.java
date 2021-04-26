@@ -12,20 +12,6 @@ import static core.Main.getCollection;
 public class RemoveByUOM extends Command {
     private UnitOfMeasure unitOfMeasure;
 
-    public RemoveByUOM() {
-        super(1);
-    }
-
-    @Override
-    public String description() {
-        return "Удаляет из коллекции один из элементов с unitOfMeasure эквивалентным заданному." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: remove_any_by_unit_of_measure unitOfMeasure, где unitOfMeasure: " + UnitOfMeasure.valueList() + ".";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         try {
@@ -53,5 +39,15 @@ public class RemoveByUOM extends Command {
         } catch (NoSuchElementException e) {
             return "Удаление невозможно, так как в коллекции нет элемента с unitOfMeasure "+unitOfMeasure+".";
         }
+    }
+
+    @Override
+    public String description() {
+        return "Удаляет из коллекции один из элементов с unitOfMeasure эквивалентным заданному." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: remove_any_by_unit_of_measure unitOfMeasure, где unitOfMeasure: " + UnitOfMeasure.valueList() + ".";
     }
 }

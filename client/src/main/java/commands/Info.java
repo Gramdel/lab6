@@ -6,10 +6,6 @@ import static core.Main.getCollection;
 import static core.Main.getDate;
 
 public class Info extends Command {
-    public Info() {
-        super(0);
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {

@@ -7,10 +7,6 @@ import static core.Main.getInterpreter;
 public class History extends Command {
     private LinkedList<String> history;
 
-    public History() {
-        super(0);
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         if (!arg.matches("\\s*")) {

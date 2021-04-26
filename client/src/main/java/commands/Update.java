@@ -16,20 +16,6 @@ public class Update extends Command {
     private Product product;
     private Long id;
 
-    public Update() {
-        super(1);
-    }
-
-    @Override
-    public String description() {
-        return "Обновляет значение элемента коллекции, id которого равен заданному." + syntax();
-    }
-
-    @Override
-    public String syntax() {
-        return " Синтаксис: update id, где id - целое положительное число. \n\t\t(В скриптах - update id {element}, где {element} - JSON-строка)";
-    }
-
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
         Product product = null;
@@ -109,5 +95,15 @@ public class Update extends Command {
             System.out.println("\t"+getOrganizations());
             return "Элемент c id " + id + " успешно обновлён!";
         }
+    }
+
+    @Override
+    public String description() {
+        return "Обновляет значение элемента коллекции, id которого равен заданному." + syntax();
+    }
+
+    @Override
+    public String syntax() {
+        return " Синтаксис: update id, где id - целое положительное число. \n\t\t(В скриптах - update id {element}, где {element} - JSON-строка)";
     }
 }
