@@ -47,7 +47,7 @@ public class Interpreter implements Serializable {
                 Command command = commands.get(com);
                 if (command != null) {
                     if (command.prepare(arg, stream.equals(System.in))) {
-                        Sender.send(command);
+                        System.out.println(command.execute());
                     }
                 } else {
                     System.out.println("Такой команды не существует! Список команд: help");
