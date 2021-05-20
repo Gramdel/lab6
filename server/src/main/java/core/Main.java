@@ -17,9 +17,8 @@ public class Main {
         Main.args = args;
         date = new Date();
         CSVUnit.read(args);
-        System.out.println("Вас приветствует программа для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
-        //interpreter.fromStream(System.in);
-        Receiver.receive();
+        Server server = new Server(args);
+        server.run();
     }
 
     public static Date getDate() {
