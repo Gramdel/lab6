@@ -18,7 +18,7 @@ public class Help extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         StringBuilder s = new StringBuilder();
         interpreter.getCommands().forEach((commandName,command) -> s.append("\n\t").append(commandName).append(" - ").append(command.description()));
         return "Список допустимых команд:" + s.toString();

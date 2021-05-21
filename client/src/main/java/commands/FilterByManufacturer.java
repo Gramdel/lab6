@@ -49,7 +49,7 @@ public class FilterByManufacturer extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         StringBuilder s = new StringBuilder();
         getCollection().stream().filter(x -> x.getManufacturer().equals(manufacturer)).forEach(x -> s.append("\n").append(x));
         if (s.toString().isEmpty()) {

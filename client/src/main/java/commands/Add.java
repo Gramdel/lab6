@@ -48,7 +48,7 @@ public class Add extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if (getOrganizations().contains(product.getManufacturer())) {
             for (Organization o : getOrganizations()) {
                 if (o.equals(product.getManufacturer())) {

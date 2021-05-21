@@ -14,7 +14,7 @@ public class Show extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if (getCollection().size() > 0) {
             StringBuilder msg = new StringBuilder();
             getCollection().stream().sorted(Product.byIdComparator).forEach(p -> msg.append("\n").append(p));

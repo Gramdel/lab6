@@ -31,7 +31,7 @@ public class RemoveByUOM extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         try {
             Product product = getCollection().stream().filter(x -> x.getUnitOfMeasure().equals(unitOfMeasure)).findAny().get();
             getCollection().remove(product);

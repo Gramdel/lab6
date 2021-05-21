@@ -51,7 +51,7 @@ public class AddIfMax extends Command{
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         try {
             if (product.getPrice() >= getCollection().stream().max(Product.byPriceComparator).get().getPrice()) {
                 if (getOrganizations().contains(product.getManufacturer())) {

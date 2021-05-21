@@ -4,53 +4,60 @@ import commands.Command;
 
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
 
-public class Server {
+import static core.Main.getArgs;
+import static core.Main.getLogger;
+
+public class Server extends Thread {
     private DatagramSocket socket;
 
-    public Server(String[] args) {
-        if (args.length < 2) {
+    public Server() {
+        if (getArgs().length < 2) {
             System.out.println("Сервер не запущен, так как не указан порт!\n(число от 0 до 65535 должно быть передано вторым аргументом командной строки)");
+            getLogger().log(Level.WARNING,"Сервер не запущен, так как не указан порт!");
         } else {
+            System.out.println("Пытаемся запустить сервер на порте "+getArgs()[1]+"...");
             try {
-                socket = new DatagramSocket((int) Long.parseLong(args[1]));
-                System.out.println("Сервер запущен на порте "+args[1]+"!");
+                socket = new DatagramSocket((int) Long.parseLong(getArgs()[1]));
+                System.out.println("Сервер успешно запущен!");
+                getLogger().log(Level.INFO,"Сервер успешно запущен!");
             } catch (SocketException e) {
-                System.out.println("Не удалось запустить сервер на порте "+args[1]+"!");
+                System.out.println("Не удалось запустить сервер на этом порте!");
+                getLogger().log(Level.WARNING,"Не удалось запустить сервер на порте "+getArgs()[1]+"!");
             } catch (NumberFormatException e) {
                 System.out.println("Сервер не запущен, так как указан неправильный формат порта!\n(число от 0 до 65535 должно быть передано вторым аргументом командной строки)");
+                getLogger().log(Level.WARNING,"Не удалось запустить сервер на порте "+getArgs()[1]+"!");
             }
         }
     }
 
     public void run() {
-        int i = 1;
         while(true) {
             try {
                 byte[] b = new byte[10000];
-                DatagramPacket packet1 = new DatagramPacket(b, b.length);
+                DatagramPacket packet = new DatagramPacket(b, b.length);
 
-                socket.receive(packet1);
-                System.out.println("Подключен клиент "+i+"c IP "+packet1.getAddress());
-                i++;
+                socket.receive(packet);
+                getLogger().log(Level.INFO,"Получен пакет от клиента "+packet.getAddress());
 
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(b);
                 ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
                 Command command = (Command) objectInputStream.readObject();
-                System.out.println("Получение успешно!");
+                getLogger().log(Level.INFO,"Успешная десериализация команды "+command.getClass().getSimpleName()+"!");
 
                 try {
                     String response = command.execute();
                     b = response.getBytes();
-                    DatagramPacket packet2 = new DatagramPacket(b, b.length, packet1.getAddress(), packet1.getPort());
-                    socket.send(packet2);
-                    System.out.println("Отправка успешна!");
+                    packet = new DatagramPacket(b, b.length, packet.getAddress(), packet.getPort());
+                    socket.send(packet);
+                    getLogger().log(Level.INFO,"Ответ успешно отправлен!");
                 } catch (IOException e) {
-                    System.out.println("Отправка не удалась!");
+                    getLogger().log(Level.WARNING,"Ошибка отправки ответа!");
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
-                System.out.println("Получение не удалось!");
+                getLogger().log(Level.WARNING,"Ошибка десериализации!");
             }
         }
     }

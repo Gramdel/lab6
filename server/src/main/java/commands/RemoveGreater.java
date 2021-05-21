@@ -51,7 +51,7 @@ public class RemoveGreater extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         int prevSize = getCollection().size();
         if (prevSize == 0) {
             return "Т.к. коллекция пуста, невозможно удалить из неё элементы, цена которых больше цены данного.";

@@ -68,7 +68,7 @@ public class Update extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if (getCollection().stream().noneMatch(x -> x.getId().equals(id))) {
             return "Нечего обновлять: элемента с id " + id + " нет в коллекции!";
         } else {

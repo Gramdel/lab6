@@ -16,7 +16,7 @@ public class Info extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         return "Тип коллекции:\n" + getCollection().getClass() + "\n" + "Дата инициализации коллекции:\n" + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(getDate()) + "\n" + "Количество элементов коллекции:\n" + getCollection().size();
     }
 

@@ -15,7 +15,7 @@ public class PrintPrice extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if (getCollection().size() > 0) {
             StringBuilder s = new StringBuilder();
             getCollection().stream().sorted(Product.byPriceComparator.reversed()).forEach(product -> s.append("\n\t").append(product.getPrice()));

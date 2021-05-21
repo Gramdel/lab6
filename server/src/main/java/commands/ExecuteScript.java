@@ -5,7 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static core.Main.getInterpreter;
 
 public class ExecuteScript extends Command {
@@ -28,7 +32,29 @@ public class ExecuteScript extends Command {
             try {
                 System.out.println("Скрипт из файла " + arg + " начинает выполняться...");
                 scripts.push(arg);
-                getInterpreter().fromStream(new BufferedInputStream(new FileInputStream(arg)));
+                Scanner in = new Scanner(new BufferedInputStream(new FileInputStream(arg)));
+                while (in.hasNext()) {
+                    String s = in.nextLine();
+                    if (!s.matches("\\s*")) {
+                        String com = "";
+                        String arg2 = "";
+                        Matcher m = Pattern.compile("[^\\s]+").matcher(s);
+                        if (m.find()) {
+                            com = m.group();
+                            arg2 = m.replaceFirst("");
+                        }
+                        //addToHistory(com);
+                        Command command = getInterpreter().getCommands().get(com);
+                        if (command != null) {
+                            if (command.prepare(arg2, false)) {
+                                System.out.println(command.execute());
+                            }
+                        } else {
+                            System.out.println("Такой команды не существует! Список команд: help");
+                        }
+                    }
+                }
+                //getInterpreter().fromStream();
                 this.arg = arg;
                 return true;
             } catch (FileNotFoundException e) {
@@ -39,7 +65,7 @@ public class ExecuteScript extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         scripts.remove(arg);
         return "Скрипт из файла " + arg + " выполнен!";
     }

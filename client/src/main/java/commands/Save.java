@@ -1,13 +1,20 @@
 package commands;
 
+//import core.CSVUnit;
+
 public class Save extends Command {
     @Override
-    public String execute() {
-        return null;
+    public synchronized String execute() {
+        return "";
+        //return CSVUnit.write();
     }
 
     @Override
-    public boolean prepare(String s, boolean isInteractive) {
+    public boolean prepare(String arg, boolean isInteractive) {
+        if (!arg.matches("\\s*")) {
+            System.out.println("У команды save не может быть аргументов!");
+            return false;
+        }
         return true;
     }
 

@@ -5,35 +5,39 @@ import collection.Product;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static core.Main.*;
-import static core.Main.getOrganizations;
 
 public class CSVUnit {
     private static Product product;
-    public static void read(String[] args){
-        if (args.length > 0) {
-            System.out.println("Пытаемся загрузить коллекцию из файла \""+args[0]+"\"...");
-            if (!Files.exists(Paths.get(args[0]))) {
+    public static void read(){
+        if (getArgs().length > 0) {
+            System.out.println("Пытаемся загрузить коллекцию из файла \""+getArgs()[0]+"\"...");
+            if (!Files.exists(Paths.get(getArgs()[0]))) {
                 System.out.println("Коллекция не загружена, так как файл коллекции не найден!");
-            } else if (Files.isDirectory(Paths.get(args[0]))) {
+            } else if (Files.isDirectory(Paths.get(getArgs()[0]))) {
                 System.out.println("Коллекция не загружена, так как в качестве файла коллекци была передана директория!");
-            } else if (!Files.isRegularFile(Paths.get(args[0]))) {
+            } else if (!Files.isRegularFile(Paths.get(getArgs()[0]))) {
                 System.out.println("Коллекция не загружена, так как в качестве файла коллекции передан специальный файл!");
-            } else if (!Files.isReadable(Paths.get(args[0]))) {
+            } else if (!Files.isReadable(Paths.get(getArgs()[0]))) {
                 System.out.println("Коллекция не заполнена данными, так как у файла коллекции нет прав на чтение.");
             } else {
-                try (BufferedReader in = new BufferedReader(new FileReader(args[0]))) {
+                try (BufferedReader in = new BufferedReader(new FileReader(getArgs()[0]))) {
                     String s;
                     int count = 1;
                     while ((s = in.readLine()) != null) {
                         if (s.matches("[^,]*(,[^,]*){11}")) {
                             String[] values = s.split("[,]", -1);
+                            for (int i=0;i<values.length;i++) {
+                                if (values[i].isEmpty()) {
+                                    values[i] = null;
+                                }
+                            }
                             StringBuilder builder = new StringBuilder();
                             builder.append("{\"name\":\"").append(values[1]);
                             builder.append("\",\"coordinates\":{\"x\":").append(values[2]).append(",\"y\":").append(values[3]);
@@ -86,6 +90,33 @@ public class CSVUnit {
             }
         } else {
             System.out.println("Коллекция не заполнена данными, так как файл коллекции не указан.");
+        }
+    }
+
+    public static String write() {
+        if (getArgs().length > 0) {
+            if (!Files.exists(Paths.get(getArgs()[0]))) {
+                return "Коллекция не сохранена, так как файл коллекции не найден.";
+            } else if (Files.isDirectory(Paths.get(getArgs()[0]))) {
+                return "Коллекция не сохранена, так как в качестве файла коллекци была передана директория.";
+            } else if (!Files.isRegularFile(Paths.get(getArgs()[0]))) {
+                return "Коллекция не не сохранена, так как в качестве файла коллекции передан специальный файл.";
+            } else if (Files.isWritable(Paths.get(getArgs()[0]))) {
+                try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(getArgs()[0]))) {
+                    ArrayList<Product> sortedCollection = new ArrayList<>(getCollection());
+                    Collections.sort(sortedCollection);
+                    for (Product product : sortedCollection) {
+                        out.write(product.toStringForCSV().getBytes());
+                    }
+                    return "Коллекция сохранена в файл "+getArgs()[0]+"!";
+                } catch (IOException e) {
+                    return "Коллекция не сохранена, так как файл для сохранения коллекции не найден.";
+                }
+            } else {
+                return "Коллекция не сохранена, так как у файла коллекции нет прав на запись.";
+            }
+        } else {
+            return "Коллекция не сохранена, так как файл коллекции не указан.";
         }
     }
 }

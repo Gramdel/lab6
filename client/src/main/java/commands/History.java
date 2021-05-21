@@ -18,7 +18,7 @@ public class History extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if (history.size() > 0) {
             StringBuilder s = new StringBuilder();
             history.forEach(x -> s.append("\n\t").append(x));

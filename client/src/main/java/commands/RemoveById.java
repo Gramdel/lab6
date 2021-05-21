@@ -31,7 +31,7 @@ public class RemoveById extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         try {
             Product product = getCollection().stream().filter(x -> x.getId().equals(id)).findFirst().get();
             if (getCollection().stream().filter(x -> x.getManufacturer().equals(product.getManufacturer())).count() == 1) {

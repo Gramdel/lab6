@@ -25,7 +25,6 @@ public class Interpreter implements Serializable {
         commands.put("info", new Info());
         commands.put("remove_any_by_unit_of_measure", new RemoveByUOM());
         commands.put("filter_by_manufacturer", new FilterByManufacturer());
-        commands.put("save", new Save());
         commands.put("add_if_max", new AddIfMax());
         commands.put("print_field_descending_price", new PrintPrice());
         commands.put("remove_greater", new RemoveGreater());
@@ -47,7 +46,7 @@ public class Interpreter implements Serializable {
                 Command command = commands.get(com);
                 if (command != null) {
                     if (command.prepare(arg, stream.equals(System.in))) {
-                        Sender.send(command);
+                        Client.send(command);
                     }
                 } else {
                     System.out.println("Такой команды не существует! Список команд: help");

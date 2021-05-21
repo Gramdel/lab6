@@ -39,7 +39,7 @@ public class ExecuteScript extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         scripts.remove(arg);
         return "Скрипт из файла " + arg + " выполнен!";
     }

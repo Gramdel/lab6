@@ -2,9 +2,14 @@ package core;
 
 import collection.Product;
 import collection.Organization;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Main {
     private static final LinkedHashSet<Product> collection = new LinkedHashSet<>();
@@ -12,13 +17,28 @@ public class Main {
     private static final Interpreter interpreter = new Interpreter();
     private static Date date;
     private static String[] args;
+    private static Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        Main.args = args;
-        date = new Date();
-        CSVUnit.read(args);
-        System.out.println("Вас приветствует программа для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
-        interpreter.fromStream(System.in);
+        if (args.length<2) {
+            System.out.println("Программа не запущена, так как не переданы IP и порт сервера!\n(Они должны быть переданы через аргументы командной строки. Формат IP: xxx.xxx.xxx.xxx; формат порта: число от 0 до 65535.)");
+        } else {
+            Main.args = args;
+            try {
+                String loggerCfg = "handlers = java.util.logging.FileHandler\n" +
+                        "java.util.logging.FileHandler.level     = ALL\n" +
+                        "java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter\n" +
+                        "java.util.logging.FileHandler.append    = true\n" +
+                        "java.util.logging.FileHandler.pattern   = log.txt";
+                LogManager.getLogManager().readConfiguration(new ByteArrayInputStream(loggerCfg.getBytes()));
+                logger = Logger.getLogger(Main.class.getName());
+                System.out.println("Логгер успешно инициализирован!");
+            } catch (IOException e) {
+                System.out.println("Не удалось инициализировать логгер!");
+            }
+            System.out.println("Вас приветствует программа-клиент для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
+            interpreter.fromStream(System.in);
+        }
     }
 
     public static Date getDate() {
@@ -35,6 +55,10 @@ public class Main {
 
     public static Interpreter getInterpreter() {
         return interpreter;
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 
     public static String[] getArgs() {

@@ -13,7 +13,7 @@ public class Clear extends Command {
     }
 
     @Override
-    public String execute() {
+    public synchronized String execute() {
         if(getCollection().size()>0) {
             getCollection().clear();
             return "Коллекция очищена.";
