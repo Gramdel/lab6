@@ -36,9 +36,11 @@ public class Main {
         Main.args = args;
         CSVUnit.read();
         Server server = new Server();
-        server.setDaemon(true);
         System.out.println("Вас приветствует программа-сервер для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
-        server.start();
+        if (server.getSocket() != null) {
+            server.setDaemon(true);
+            server.start();
+        }
         interpreter.fromStream(System.in);
     }
 

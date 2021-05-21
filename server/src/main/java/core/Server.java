@@ -61,4 +61,8 @@ public class Server extends Thread {
             }
         }
     }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
 }

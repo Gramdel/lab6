@@ -33,7 +33,7 @@ public class Client {
                     packet = new DatagramPacket(b, b.length);
                     socket.receive(packet);
                     getLogger().log(Level.INFO,"Ответ от сервера успешно получен!");
-                    System.out.println(new String(b));
+                    System.out.println(new String(b).trim());
                 } catch (SocketTimeoutException e) {
                     System.out.println("Время ожидания ответа от сервера истекло!");
                     getLogger().log(Level.WARNING,"Время ожидания ответа от сервера истекло!");
