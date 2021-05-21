@@ -8,9 +8,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static core.Main.addToHistory;
+
 public class Interpreter implements Serializable {
     private final HashMap<String, Command> commands = new HashMap<>();
-    private final LinkedList<String> history = new LinkedList<>();
 
     {
         commands.put("add", new Add());
@@ -41,6 +42,10 @@ public class Interpreter implements Serializable {
                 Matcher m = Pattern.compile("[^\\s]+").matcher(s);
                 if (m.find()) {
                     com = m.group();
+                    s = m.replaceFirst("");
+                }
+                m = Pattern.compile("[\\s]+").matcher(s);
+                if (m.find()) {
                     arg = m.replaceFirst("");
                 }
                 addToHistory(com);
@@ -58,14 +63,5 @@ public class Interpreter implements Serializable {
 
     public HashMap<String, Command> getCommands() {
         return commands;
-    }
-
-    public LinkedList<String> getHistory() {
-        return history;
-    }
-
-    private void addToHistory(String com) {
-        history.add(com);
-        if (history.size() > 7) history.remove();
     }
 }

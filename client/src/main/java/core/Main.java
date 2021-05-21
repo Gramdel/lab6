@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Stack;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -18,6 +19,7 @@ public class Main {
     private static Date date;
     private static String[] args;
     private static Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Stack<String> history = new Stack<>();
 
     public static void main(String[] args) {
         if (args.length<2) {
@@ -63,5 +65,14 @@ public class Main {
 
     public static String[] getArgs() {
         return args;
+    }
+
+    public static Stack<String> getHistory() {
+        return history;
+    }
+
+    public static void addToHistory(String com) {
+        history.add(com);
+        if (history.size() > 7) history.removeElementAt(0);
     }
 }

@@ -30,6 +30,7 @@ public class ExecuteScript extends Command {
                 scripts.push(arg);
                 getInterpreter().fromStream(new BufferedInputStream(new FileInputStream(arg)));
                 this.arg = arg;
+                scripts.remove(arg);
                 return true;
             } catch (FileNotFoundException e) {
                 System.out.println("Скрипта с именем " + arg + " не существует!");
@@ -40,7 +41,6 @@ public class ExecuteScript extends Command {
 
     @Override
     public synchronized String execute() {
-        scripts.remove(arg);
         return "Скрипт из файла " + arg + " выполнен!";
     }
 

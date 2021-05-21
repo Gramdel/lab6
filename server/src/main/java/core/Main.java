@@ -5,9 +5,7 @@ import collection.Product;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -18,6 +16,7 @@ public class Main {
     private static Date date;
     private static String[] args;
     private static Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Stack<String> history = new Stack<>();
 
     public static void main(String[] args) {
         try {
@@ -38,7 +37,7 @@ public class Main {
         CSVUnit.read();
         Server server = new Server();
         server.setDaemon(true);
-        System.out.println("Вас приветствует программа для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
+        System.out.println("Вас приветствует программа-сервер для управления коллекцией продуктов. Для получения списка команд введите help. \n" + "Введите команду:");
         server.start();
         interpreter.fromStream(System.in);
     }
@@ -65,5 +64,14 @@ public class Main {
 
     public static Logger getLogger() {
         return logger;
+    }
+
+    public static Stack<String> getHistory() {
+        return history;
+    }
+
+    public static void addToHistory(String com) {
+        history.add(com);
+        if (history.size() > 7) history.removeElementAt(0);
     }
 }

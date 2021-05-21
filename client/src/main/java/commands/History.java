@@ -1,11 +1,11 @@
 package commands;
 
-import java.util.LinkedList;
+import java.util.Stack;
 
-import static core.Main.getInterpreter;
+import static core.Main.getHistory;
 
 public class History extends Command {
-    private LinkedList<String> history;
+    private Stack<String> history;
 
     @Override
     public boolean prepare(String arg, boolean isInteractive) {
@@ -13,7 +13,7 @@ public class History extends Command {
             System.out.println("У команды history не может быть аргументов!");
             return false;
         }
-        history = getInterpreter().getHistory();
+        history = getHistory();
         return true;
     }
 
