@@ -2,6 +2,8 @@ package core;
 
 import collection.Organization;
 import collection.Product;
+import commands.Interpreter;
+import commands.Save;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,7 +14,6 @@ import java.util.logging.Logger;
 public class Main {
     private static final LinkedHashSet<Product> collection = new LinkedHashSet<>();
     private static final ArrayList<Organization> organizations = new ArrayList<>();
-    private static final Interpreter interpreter = new Interpreter();
     private static Date date;
     private static String[] args;
     private static Logger logger = Logger.getLogger(Main.class.getName());
@@ -41,11 +42,10 @@ public class Main {
             server.setDaemon(true);
             server.start();
         }
-        interpreter.fromStream(System.in);
-    }
-
-    public static Date getDate() {
-        return date;
+        Interpreter.addCommand("save", new Save());
+        Interpreter.switchMode();
+        Interpreter.setProperties(collection, organizations, date, history);
+        Interpreter.fromStream(System.in);
     }
 
     public static LinkedHashSet<Product> getCollection() {
@@ -56,10 +56,6 @@ public class Main {
         return organizations;
     }
 
-    public static Interpreter getInterpreter() {
-        return interpreter;
-    }
-
     public static String[] getArgs() {
         return args;
     }
@@ -68,12 +64,11 @@ public class Main {
         return logger;
     }
 
-    public static Stack<String> getHistory() {
-        return history;
+    public static Date getDate() {
+        return date;
     }
 
-    public static void addToHistory(String com) {
-        history.add(com);
-        if (history.size() > 7) history.removeElementAt(0);
+    public static Stack<String> getHistory() {
+        return history;
     }
 }

@@ -6,8 +6,7 @@ import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
 
-import static core.Main.getArgs;
-import static core.Main.getLogger;
+import static core.Main.*;
 
 public class Server extends Thread {
     private DatagramSocket socket;
@@ -47,7 +46,7 @@ public class Server extends Thread {
                 getLogger().log(Level.INFO,"Успешная десериализация команды "+command.getClass().getSimpleName()+"!");
 
                 try {
-                    String response = command.execute();
+                    String response = command.execute(getCollection(),getOrganizations(),getDate(),getHistory());
                     b = response.getBytes();
                     packet = new DatagramPacket(b, b.length, packet.getAddress(), packet.getPort());
                     socket.send(packet);

@@ -1,6 +1,7 @@
 package core;
 
 import commands.Command;
+import commands.Interpreter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,8 +12,23 @@ import java.util.logging.Level;
 import static core.Main.getLogger;
 import static core.Main.getArgs;
 
-public class Client {
-    public static void send(Command command) {
+public class Client extends Thread {
+    @Override
+    public void run() {
+        while (true) {
+            if (Interpreter.getCommand() != null) {
+                send(Interpreter.getCommand());
+                Interpreter.setCommand(null);
+            }
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void send(Command command) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
